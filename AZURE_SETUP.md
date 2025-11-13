@@ -142,10 +142,7 @@ Now you'll get the three critical values needed for the project.
    ```bash
    # Example:
    https://eastus.api.azureml.ms/api/v1.0/subscriptions/abc-123/resourceGroups/rg-screenshot/providers/Microsoft.MachineLearningServices/workspaces/screenshot-agent/projects/screenshot-project
-
-   # Or simpler format:
-   https://screenshot-agent-hub.services.ai.azure.com/api/projects/screenshot-project
-   ```
+  ```
 
 ### Get AZURE_AI_MODEL_DEPLOYMENT
 
