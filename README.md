@@ -15,7 +15,8 @@ This repository contains a description of a Screenshot Agent from specifications
 │   ├── plan.md                  # Implementation plan
 │   ├── quickstart.md            # Quick start guide
 │   └── contracts/
-│       └── mcp-api-spec.json    # MCP tool contracts - not strictly necessary but will make api compatibility
+│       └── mcp-api-spec.json    # MCP tool contracts
+├── AZURE_SETUP.md               # Azure AI Foundry setup guide (get $200 free credits!)
 ├── SPECHINT.md                  # Tips & gotchas from original build
 └── README.md                    # This file
 ```
@@ -32,6 +33,23 @@ An AI agent demonstrating production patterns:
 **Use Case:** Screenshot organization (but the architecture is the real demonstration)
 
 ## How to Build
+
+### Step 0: Set Up Azure AI Foundry (Required)
+
+Before you start, you need Azure AI credentials to run the agent:
+
+**📘 [AZURE_SETUP.md](./AZURE_SETUP.md)** - Complete setup guide:
+- Get $200 in free Azure credits
+- Create Azure AI Foundry project
+- Deploy GPT-4o model
+- Get your environment variables:
+  ```bash
+  export AZURE_AI_CHAT_ENDPOINT="https://your-project.services.ai.azure.com/api/projects/your-project"
+  export AZURE_AI_MODEL_DEPLOYMENT="gpt-4o"
+  export AZURE_AI_CHAT_KEY="your_api_key"
+  ```
+
+**⏱️ Time needed:** 15-20 minutes for first-time setup
 
 ### Step 1: Read the Foundation Documents
 
@@ -59,9 +77,10 @@ Start here, in this order:
    - Component breakdown
    - Integration approach
 
-5. **specs/001-screenshot-organizer/tasks.md** - Task breakdown:
-   - Detailed implementation tasks
-   - Acceptance criteria
+5. **specs/001-screenshot-organizer/quickstart.md** - Getting started:
+   - Setup instructions
+   - Environment configuration
+   - Testing procedures
 
 
 ## Key Technologies
@@ -95,9 +114,9 @@ File System
 
 You've successfully rebuilt when:
 
-- ✅ All user stories (US-001 through US-009) work
+- ✅ All user stories (US-001 through US-011) work
 - ✅ Constitution principles satisfied
-- ✅ TRACEABILITY.md requirements map to your code
+- ✅ All functional requirements (FR-001 through FR-016) implemented
 - ✅ Agent demonstrates Framework + MCP integration
 - ✅ OCR-first processing works with Vision fallback
 - ✅ Conversational UX follows 7-phase flow
@@ -133,10 +152,12 @@ It was chosen because it requires multi-step tool orchestration and clearly demo
 
 | File | Purpose | When to Read |
 |------|---------|--------------|
+| **AZURE_SETUP.md** | Azure AI Foundry setup & free credits | BEFORE starting - required credentials |
 | **SPECHINT.md** | Practical tips & gotchas | Read FIRST - saves hours |
 | **constitution.md** | Non-negotiable constraints | Before planning |
 | **spec.md** | What to build | For requirements |
 | **plan.md** | How to structure | Before coding |
+| **quickstart.md** | Installation & setup | When ready to implement |
 
 This is free and unencumbered "software" released into the public domain.
 
@@ -147,8 +168,8 @@ For more information, please refer to <https://unlicense.org/>
 ## Built With SpecKit
 
 This project demonstrates the **SpecKit workflow**:
-- Constitution → Spec → Plan → Tasks → Implementation
-- Traceability mapping throughout
+- Constitution → Spec → Plan → Implementation
+- All requirements traceable through user stories and functional requirements
 - Rebuild-ready from specifications alone
 
 Can you rebuild it? 🚀

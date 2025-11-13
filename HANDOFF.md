@@ -118,20 +118,23 @@ cat specs/001-screenshot-organizer/plan.md
 
 ---
 
-## Step 4: Review the Task List
+## Step 4: Start Implementation
 
-**File:** `specs/001-screenshot-organizer/tasks.md`
+At this point, you have everything you need to start building:
 
-**Purpose:** Understand implementation order and acceptance criteria
+**Break down the work:**
+- User stories (US-001 through US-011) define what to build
+- Functional requirements (FR-001 through FR-016) define how it should work
+- Plan.md provides the technical architecture and component structure
 
-**Focus areas:**
-- **Task phases:** Logical grouping of work
-- **Task dependencies:** What must be done first
-- **Acceptance criteria:** How to know a task is complete
-- **Status tracking:** What's done, what's pending
+**Implementation approach:**
+- Start with core processing (OCR, Vision, Classification)
+- Build MCP tools and server
+- Integrate Agent Framework
+- Add CLI interface
+- Test and refine
 
-**Verification checklist:**
-- [ ] Tasks are small enough (1-2 days max each)
-- [ ] Each task has clear acceptance criteria
-- [ ] Dependencies are explicit
-- [ ] Tasks trace back to spec (see TRACEABILITY.md)
+**Verification:**
+- Each user story has acceptance criteria
+- Each functional requirement has testable outcomes
+- Constitution Article X defines the required tech stack

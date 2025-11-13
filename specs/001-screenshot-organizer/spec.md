@@ -23,9 +23,9 @@ This project shows how to build production AI agents using:
    - Code structure prioritizes clarity and teachability over optimization
 
 2. **Documentation Is Extensive:**
-   - `ARCHITECTURE.md` explains the "Brain vs Hands" pattern in detail
-   - `TRACEABILITY.md` shows how spec requirements map to implementation
-   - Code comments explain WHY architectural decisions were made, not just WHAT the code does
+   - This spec explains the "Brain vs Hands" pattern throughout (see "Dual-Mode Architecture" and FR-009)
+   - User stories and functional requirements provide clear traceability
+   - Implementation should include code comments explaining WHY architectural decisions were made, not just WHAT the code does
 
 3. **Use Case (Screenshots) Is Secondary:**
    - Screenshot organization was chosen to demonstrate multi-step tool orchestration

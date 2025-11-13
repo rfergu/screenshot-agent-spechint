@@ -2,11 +2,30 @@
 
 ## Prerequisites
 
-Before you begin, ensure you have the following installed:
+Before you begin, ensure you have the following:
 
-1. **Python 3.10+**
+### 1. Azure AI Foundry Setup (Required)
+
+**You need Azure AI credentials to run this project.**
+
+📘 **See [AZURE_SETUP.md](../../AZURE_SETUP.md)** for complete instructions on:
+- Getting $200 free Azure credits
+- Setting up Azure AI Foundry project
+- Deploying GPT-4o model
+- Obtaining your API credentials
+
+Once you have your credentials, you'll need these three environment variables:
+```bash
+export AZURE_AI_CHAT_ENDPOINT="https://your-project.services.ai.azure.com/api/projects/your-project"
+export AZURE_AI_MODEL_DEPLOYMENT="gpt-4o"
+export AZURE_AI_CHAT_KEY="your_api_key"
+```
+
+### 2. Local Development Tools
+
+1. **Python 3.11+**
    ```bash
-   python --version  # Should be 3.10 or higher
+   python --version  # Should be 3.11 or higher
    ```
 
 2. **Tesseract OCR**
@@ -54,9 +73,17 @@ export LOG_LEVEL=INFO
 Then reload: `source ~/.zshrc`
 
 **Option B: .env File**
+
+Create a `.env` file in the project root with the same variables shown in Option A:
 ```bash
-cp .env.example .env
-# Edit .env and add your Azure credentials
+# Create .env file
+cat > .env << EOF
+AZURE_AI_CHAT_ENDPOINT=https://your-project.services.ai.azure.com/api/projects/your-id
+AZURE_AI_CHAT_KEY=your-api-key
+AZURE_AI_MODEL_DEPLOYMENT=gpt-4
+MCP_SERVER_PORT=8080
+LOG_LEVEL=INFO
+EOF
 ```
 
 **Getting Azure Credentials:**
@@ -65,8 +92,6 @@ cp .env.example .env
 3. Navigate to Settings → Project connection string (for endpoint)
 4. Navigate to Keys and Endpoint (for API key)
 5. Note your model deployment name from Deployments section
-
-See `.env.example` for detailed setup instructions.
 
 ### 5. Download Azure GPT-4o Vision Model (Optional)
 The model will auto-download on first use (~8GB), but you can pre-download:
