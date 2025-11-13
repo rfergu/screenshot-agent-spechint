@@ -48,28 +48,50 @@ This plan details the technical implementation of the Screenshot Organizer with 
 ## Technology Stack
 
 ### Core Dependencies
+
+Only list packages you directly import. Agent Framework manages Azure integration as transitive dependencies.
+
 ```python
 # requirements.txt
-azure-ai-inference>=1.0.0b9  # Azure AI Foundry SDK
-azure-identity>=1.15.0        # Azure authentication
-mcp>=1.0.0                    # Model Context Protocol
-pytesseract==0.3.10           # OCR processing
-Pillow>=10.2.0                # Image handling
-azure-ai-inference>=0.0.3rc1    # Local vision model
-python-dotenv>=1.0.0          # Environment management
-rich>=13.7.0                  # Terminal UI formatting
-click>=8.1.7                  # CLI framework
-pydantic>=2.7.2               # Data validation
-PyYAML>=6.0                   # Configuration parsing
-pytest>=7.4.0                 # Testing framework
+
+# Core Framework (handles Azure OpenAI/AI Foundry integration)
+agent-framework>=1.0.0b251111
+
+# MCP Protocol
+mcp>=1.0.0
+
+# Screenshot Processing
+pytesseract==0.3.10
+Pillow>=10.2.0
+
+# Configuration & Utilities
+python-dotenv>=1.0.0
+pydantic>=2.7.2
+PyYAML>=6.0
+
+# CLI & Terminal UI
+rich>=13.7.0
+click>=8.1.7
+
+# Testing
+pytest>=7.4.0
 ```
 
-### Azure AI Foundry Configuration
+**Note:** Agent Framework (v1.0.0b251111) is in beta. It manages Azure dependencies (`openai`, `azure-ai-inference`) internally. If you encounter missing Azure-related imports, the framework may not have properly declared all dependencies - install them explicitly as needed.
+
+### Azure Configuration (OpenAI Service or AI Foundry)
 ```bash
-# Environment variables
-AZURE_AI_CHAT_ENDPOINT      # Your project endpoint URL
-AZURE_AI_CHAT_KEY           # API key (or use az login)
-AZURE_AI_MODEL_DEPLOYMENT   # Model deployment name (e.g., gpt-4, gpt-4o)
+# Environment variables (Azure OpenAI Service)
+AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com
+AZURE_OPENAI_KEY=your-api-key
+AZURE_OPENAI_DEPLOYMENT=gpt-4o
+
+# OR (Azure AI Foundry)
+AZURE_AI_CHAT_ENDPOINT=https://your-project.services.ai.azure.com
+AZURE_AI_CHAT_KEY=your-api-key
+AZURE_AI_MODEL_DEPLOYMENT=gpt-4o
+
+# Agent Framework's AzureOpenAIChatClient works with both
 ```
 
 ### Directory Structure
@@ -222,51 +244,77 @@ class KeywordClassifier:
         """Classify text based on keyword patterns"""
 ```
 
-### 5. Chat Client (`chat_client.py`)
+### 5. Agent Client (`agent_client.py`)
 
 ```python
 import os
-from azure.ai.inference import ChatCompletionsClient
-from azure.core.credentials import AzureKeyCredential
-from azure.identity import DefaultAzureCredential
+from agent_framework import ChatAgent, AzureOpenAIChatClient
+from src.screenshot_mcp.client_wrapper import MCPClientWrapper
 from rich.console import Console
-from rich.prompt import Prompt
 
-class ChatClient:
-    """Azure AI Foundry orchestrated chat interface"""
+class AgentClient:
+    """Microsoft Agent Framework wrapper with embedded MCP client"""
 
-    def __init__(self, endpoint: str = None, credential: str = None):
-        # Get endpoint
-        endpoint = endpoint or os.environ.get("AZURE_AI_CHAT_ENDPOINT")
-        api_key = credential or os.environ.get("AZURE_AI_CHAT_KEY")
+    async def async_init(self):
+        """Initialize Agent Framework with MCP tools"""
+        # 1. Start MCP client (manages MCP server subprocess)
+        self.mcp_client = MCPClientWrapper()
+        await self.mcp_client.start()
 
-        # Initialize Azure client with API key or CLI auth
-        if api_key:
-            self.client = ChatCompletionsClient(
-                endpoint=endpoint,
-                credential=AzureKeyCredential(api_key)
-            )
-        else:
-            # Fall back to Azure CLI authentication
-            self.client = ChatCompletionsClient(
-                endpoint=endpoint,
-                credential=DefaultAzureCredential()
-            )
+        # 2. Get MCP tools as async functions
+        mcp_tools = await self.mcp_client.get_tools()
 
-        self.model = os.environ.get("AZURE_AI_MODEL_DEPLOYMENT", "gpt-4")
+        # 3. Create Azure client (works with both Azure services)
+        endpoint = os.environ.get("AZURE_OPENAI_ENDPOINT") or \
+                   os.environ.get("AZURE_AI_CHAT_ENDPOINT")
+        api_key = os.environ.get("AZURE_OPENAI_KEY") or \
+                  os.environ.get("AZURE_AI_CHAT_KEY")
+        model = os.environ.get("AZURE_OPENAI_DEPLOYMENT") or \
+                os.environ.get("AZURE_AI_MODEL_DEPLOYMENT", "gpt-4o")
+
+        azure_client = AzureOpenAIChatClient(
+            endpoint=endpoint,
+            api_key=api_key,
+            model=model
+        )
+
+        # 4. Create agent with tools and system prompt
+        self.agent = ChatAgent(
+            name="Screenshot Organizer",
+            model=azure_client,
+            tools=mcp_tools,
+            instructions=SYSTEM_PROMPT
+        )
+
+        # 5. Create thread for conversation state
+        self.thread = self.agent.get_new_thread()
         self.console = Console()
-        self.system_prompt = """
-        You are a helpful assistant that organizes screenshots.
-        You have access to MCP tools for analyzing and organizing screenshots.
-        Always try OCR first for efficiency, only use vision when needed.
-        Available tools:
-        - analyze_screenshot(path, force_vision=False)
-        - batch_process(folder)
-        - organize_file(source, category, new_name)
-        """
 
-    def chat_loop(self):
-        """Main chat interaction loop"""
+    async def send_message(self, user_message: str) -> str:
+        """Send message and get agent response"""
+        # Agent Framework handles tool calling automatically
+        response = await self.agent.run(
+            thread=self.thread,
+            input=user_message
+        )
+        return response.content
+
+    async def cleanup(self):
+        """Stop MCP server subprocess"""
+        await self.mcp_client.stop()
+
+    async def chat_loop(self):
+        """Main interactive chat loop"""
+        self.console.print("[bold green]Screenshot Organizer[/bold green]")
+        self.console.print("Type 'exit' to quit\n")
+
+        while True:
+            user_input = self.console.input("[bold blue]You:[/bold blue] ")
+            if user_input.lower() in ['exit', 'quit']:
+                break
+
+            response = await self.send_message(user_input)
+            self.console.print(f"[bold green]Agent:[/bold green] {response}\n")
 ```
 
 ## Implementation Details
@@ -346,12 +394,20 @@ api:
 #### Environment Variables
 ```bash
 # .env.example or ~/.zshrc (recommended)
-AZURE_AI_CHAT_ENDPOINT=https://your-project.services.ai.azure.com/api/projects/your-id
-AZURE_AI_CHAT_KEY=your-api-key  # Or use 'az login' for CLI auth
-AZURE_AI_MODEL_DEPLOYMENT=gpt-4
+
+# Azure OpenAI Service
+AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com
+AZURE_OPENAI_KEY=your-api-key
+AZURE_OPENAI_DEPLOYMENT=gpt-4o
+
+# OR Azure AI Foundry
+AZURE_AI_CHAT_ENDPOINT=https://your-project.services.ai.azure.com
+AZURE_AI_CHAT_KEY=your-api-key
+AZURE_AI_MODEL_DEPLOYMENT=gpt-4o
+
+# Other settings
 MCP_SERVER_PORT=8080
 TESSERACT_PATH=/usr/local/bin/tesseract
-VISION_MODEL_PATH=~/.cache/vision
 LOG_LEVEL=INFO
 ```
 

@@ -105,7 +105,11 @@ These are non-negotiable technology requirements. Deviations MUST NOT be made wi
    - Rationale: Standardized tool interface, demonstrates MCP integration pattern
    - Exception process: Requires constitutional amendment (this is the project's core purpose)
 
-4. **Remote AI Provider**: Azure OpenAI or Azure AI Foundry
+4. **Remote AI Provider**: Azure OpenAI Service or Azure AI Foundry
+   - Both services work via Agent Framework's AzureOpenAIChatClient
+   - Azure OpenAI Service: `https://*.openai.azure.com` endpoints
+   - Azure AI Foundry: `https://*.services.ai.azure.com` endpoints
+   - **Use Agent Framework client, NOT OpenAI package directly**
    - Rationale: Production-grade reliability for tool calling and GPT-4 capabilities
    - Exception process: May substitute equivalent Azure service with same API contract
 

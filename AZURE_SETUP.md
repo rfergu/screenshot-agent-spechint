@@ -249,38 +249,37 @@ echo ".env" >> .gitignore
 Test that your credentials work:
 
 ```bash
-# Install Azure AI SDK if not already installed
-pip install azure-ai-inference azure-identity
+# Install Agent Framework if not already installed
+pip install agent-framework>=1.0.0b251111
 
 # Test connection
 python -c "
-from azure.ai.inference import ChatCompletionsClient
-from azure.core.credentials import AzureKeyCredential
+import asyncio
+from agent_framework import AzureOpenAIChatClient
 import os
 
-endpoint = os.environ['AZURE_AI_CHAT_ENDPOINT']
-key = os.environ['AZURE_AI_CHAT_KEY']
-model = os.environ['AZURE_AI_MODEL_DEPLOYMENT']
+async def test():
+    endpoint = os.environ.get('AZURE_AI_CHAT_ENDPOINT') or os.environ.get('AZURE_OPENAI_ENDPOINT')
+    key = os.environ.get('AZURE_AI_CHAT_KEY') or os.environ.get('AZURE_OPENAI_KEY')
+    model = os.environ.get('AZURE_AI_MODEL_DEPLOYMENT') or os.environ.get('AZURE_OPENAI_DEPLOYMENT')
 
-client = ChatCompletionsClient(
-    endpoint=endpoint,
-    credential=AzureKeyCredential(key)
-)
+    client = AzureOpenAIChatClient(
+        endpoint=endpoint,
+        api_key=key,
+        model=model
+    )
 
-response = client.complete(
-    model=model,
-    messages=[{'role': 'user', 'content': 'Say hello!'}]
-)
+    print('✅ Success! Azure credentials are configured!')
+    print(f'Using model: {model}')
 
-print('✅ Success! Azure AI Foundry is working!')
-print(f'Response: {response.choices[0].message.content}')
+asyncio.run(test())
 "
 ```
 
 **Expected output:**
 ```
-✅ Success! Azure AI Foundry is working!
-Response: Hello! How can I assist you today?
+✅ Success! Azure credentials are configured!
+Using model: gpt-4o
 ```
 
 ---
@@ -406,6 +405,29 @@ Once you have your environment variables set:
 - Hardcode keys in source code
 - Use production keys for testing
 - Ignore cost alerts
+
+---
+
+## Which SDK to Use?
+
+**Use Agent Framework, not OpenAI or Azure AI packages directly.**
+
+```bash
+# Install Agent Framework
+pip install agent-framework>=1.0.0b251111
+```
+
+Agent Framework's `AzureOpenAIChatClient` works with both:
+- Azure OpenAI Service (`*.openai.azure.com`)
+- Azure AI Foundry (`*.services.ai.azure.com`)
+
+You don't need to install `openai` or `azure-ai-inference` packages separately. The Agent Framework handles both Azure services seamlessly.
+
+**For environment variables:**
+- Azure OpenAI Service: Use `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_KEY`, `AZURE_OPENAI_DEPLOYMENT`
+- Azure AI Foundry: Use `AZURE_AI_CHAT_ENDPOINT`, `AZURE_AI_CHAT_KEY`, `AZURE_AI_MODEL_DEPLOYMENT`
+
+The project code will detect which service you're using automatically.
 
 ---
 

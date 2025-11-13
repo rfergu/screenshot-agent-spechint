@@ -4,18 +4,24 @@ Hey there! Rebuilding this from the spec? Here are some things I learned the har
 
 ## 🎯 Dependencies That Actually Work
 
-**Python Packages:**
+**Python Packages (Direct Imports Only):**
 ```bash
 # THE BIG ONE - agent-framework uses beta versioning!
-agent-framework>=1.0.0b251001   # NOT 0.1.0! It'll fail with "version not found"
+agent-framework>=1.0.0b251111   # NOT 0.1.0! It'll fail with "version not found"
 
-# These are solid
-azure-ai-inference>=1.0.0b9
-azure-identity>=1.15.0
+# MCP and Processing
 mcp>=1.0.0
 pytesseract==0.3.10
 Pillow>=10.2.0
+
+# Utilities
+python-dotenv>=1.0.0
+pydantic>=2.7.2
+rich>=13.7.0
+click>=8.1.7
 ```
+
+**Note:** Agent Framework manages Azure packages (`openai`, `azure-ai-inference`, `azure-identity`) as dependencies. If you get import errors, install them explicitly - the beta version may not declare them properly.
 
 **System Stuff:**
 - Python 3.11+ (tested on 3.11.5)
@@ -148,3 +154,117 @@ This project is a **demo of production AI agent patterns**, not a screenshot app
 Keep that context in mind when rebuilding. The choices we made (like no tools in local mode) make sense when you remember the goal is demonstrating reliable production patterns.
 
 Good luck! You got this. 🚀
+
+---
+
+## 🚨 Critical Lessons from First Implementation Attempt
+
+### Lesson 1: You MUST Use Agent Framework (Not OpenAI SDK Directly)
+
+**❌ WRONG - What the first implementation did:**
+```python
+from openai import AzureOpenAI
+
+client = AzureOpenAI(azure_endpoint=endpoint, api_key=api_key, ...)
+response = client.chat.completions.create(model="gpt-4o", messages=..., tools=...)
+```
+
+**✅ CORRECT - What you should do:**
+```python
+from agent_framework import ChatAgent, AzureOpenAIChatClient
+
+# Use Agent Framework's Azure client
+azure_client = AzureOpenAIChatClient(
+    endpoint=endpoint,
+    api_key=api_key,
+    model="gpt-4o"
+)
+
+# Create agent with MCP tools
+agent = ChatAgent(
+    name="Screenshot Organizer",
+    model=azure_client,
+    tools=mcp_tools,  # From MCPClientWrapper
+    instructions=system_prompt
+)
+
+# Let Agent Framework orchestrate everything
+thread = agent.get_new_thread()
+response = await agent.run(thread=thread, input=user_message)
+```
+
+**Why this matters:**
+- Constitution Article X requires Agent Framework (non-negotiable)
+- Agent Framework handles tool calling orchestration automatically
+- Agent Framework manages conversation state and thread persistence
+- This is the architectural pattern being demonstrated
+
+---
+
+### Lesson 2: Azure Service Disambiguation
+
+**There are TWO different Azure AI services. Check your endpoint URL:**
+
+| Endpoint Contains | Service | Agent Framework Usage |
+|-------------------|---------|----------------------|
+| `openai.azure.com` | Azure OpenAI Service | `AzureOpenAIChatClient` |
+| `services.ai.azure.com` | Azure AI Foundry | `AzureOpenAIChatClient` |
+
+**Both work with Agent Framework the same way** - `AzureOpenAIChatClient` handles both.
+
+**Environment Variables:**
+```bash
+# Azure OpenAI Service
+AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com
+AZURE_OPENAI_KEY=your-key
+AZURE_OPENAI_DEPLOYMENT=gpt-4o
+
+# OR Azure AI Foundry
+AZURE_AI_CHAT_ENDPOINT=https://your-project.services.ai.azure.com
+AZURE_AI_CHAT_KEY=your-key
+AZURE_AI_MODEL_DEPLOYMENT=gpt-4o
+```
+
+**Common Mistake:** Using `azure-ai-inference` package directly. Don't - Agent Framework's `AzureOpenAIChatClient` abstracts this.
+
+---
+
+### Lesson 3: Python Import Strategy
+
+**Problem:** `ImportError: attempted relative import beyond top-level package`
+
+**Solution:** Add to top of each module:
+```python
+import sys
+from pathlib import Path
+
+# Add project root to path
+project_root = Path(__file__).parent.parent  # Adjust as needed
+sys.path.insert(0, str(project_root))
+
+# Now use absolute imports
+from src.utils.config import load_config
+```
+
+**Why:** Allows running scripts directly (`python src/chat_client.py`) without package installation.
+
+---
+
+### Lesson 4: Agent Framework Handles Tool Calling
+
+**Don't manually parse tool calls.** Agent Framework does it automatically.
+
+**❌ WRONG:**
+```python
+if response.choices[0].message.tool_calls:
+    for tool_call in response.choices[0].message.tool_calls:
+        # Manual execution...
+```
+
+**✅ CORRECT:**
+```python
+# Agent Framework handles tool calling automatically in agent.run()
+response = await agent.run(thread=thread, input=user_message)
+```
+
+The agent will call MCP tools when needed, format responses, and manage conversation flow.
