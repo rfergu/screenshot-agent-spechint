@@ -148,7 +148,3 @@ This project is a **demo of production AI agent patterns**, not a screenshot app
 Keep that context in mind when rebuilding. The choices we made (like no tools in local mode) make sense when you remember the goal is demonstrating reliable production patterns.
 
 Good luck! You got this. 🚀
-
----
-
-*Built this? Have questions? Found more gotchas? Feel free to add them here!*

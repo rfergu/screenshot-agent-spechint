@@ -1,10 +1,10 @@
 # Screenshot Agent - SpecKit Rebuild Package
 
-Minimum files to build an AI-powered screenshot organizer demonstrating Microsoft Agent Framework WITH MCP (Model Context Protocol) integration.
+A spec to hopefully build an AI-powered screenshot organizer demonstrating Microsoft Agent Framework WITH MCP (Model Context Protocol) integration.
 
 ## What's in This Package
 
-This repository contains **everything you need to build the Screenshot Agent from specifications** - no code included:
+This repository contains a description of a Screenshot Agent from specifications.
 
 ```
 .
@@ -13,15 +13,9 @@ This repository contains **everything you need to build the Screenshot Agent fro
 ├── specs/001-screenshot-organizer/
 │   ├── spec.md                  # Complete functional specification
 │   ├── plan.md                  # Implementation plan
-│   ├── tasks.md                 # Detailed task breakdown
-│   ├── data-model.md            # Data structures
-│   ├── research.md              # Technology choices & rationale
 │   ├── quickstart.md            # Quick start guide
 │   └── contracts/
-│       └── mcp-api-spec.json    # MCP tool contracts
-├── HANDOFF.md                   # 11-step rebuild guide
-├── TRACEABILITY.md              # Requirements → code mapping
-├── MAINTAINERS.md               # Governance & decision authority
+│       └── mcp-api-spec.json    # MCP tool contracts - not strictly necessary but will make api compatibility
 ├── SPECHINT.md                  # Tips & gotchas from original build
 └── README.md                    # This file
 ```
@@ -32,7 +26,7 @@ An AI agent demonstrating production patterns:
 - **Microsoft Agent Framework** for conversational orchestration
 - **Model Context Protocol (MCP)** for standardized tool integration
 - **OCR-first processing** with GPT-4o Vision fallback
-- **7-phase conversational UX**
+- **Conversational UX**
 - Unified architecture (Agent WITH embedded MCP, not separate)
 
 **Use Case:** Screenshot organization (but the architecture is the real demonstration)
@@ -69,31 +63,6 @@ Start here, in this order:
    - Detailed implementation tasks
    - Acceptance criteria
 
-### Step 3: Build From Spec
-
-6. **Follow HANDOFF.md** - 11-step rebuild process:
-   - Prerequisites
-   - Step-by-step implementation
-   - Validation checkpoints
-
-7. **Validate with TRACEABILITY.md**:
-   - Verify each requirement is implemented
-   - Check spec → code mappings
-
-## Quick Start
-
-```bash
-# 1. Read these in order:
-cat SPECHINT.md                                    # Tips first!
-cat .specify/memory/constitution.md                # Constraints
-cat specs/001-screenshot-organizer/spec.md         # Requirements
-
-# 2. Follow the rebuild process:
-cat HANDOFF.md                                     # 11-step guide
-
-# 3. Validate your work:
-cat TRACEABILITY.md                                # Check mappings
-```
 
 ## Key Technologies
 
@@ -157,7 +126,8 @@ From **spec.md**:
 
 > **PRIMARY GOAL:** Demonstrate Microsoft Agent Framework WITH embedded MCP Client Integration
 
-The screenshot organization use case is SECONDARY - chosen because it requires multi-step tool orchestration and clearly demonstrates the "Brain vs Hands" pattern.
+The screenshot organization is a demo!
+It was chosen because it requires multi-step tool orchestration and clearly demonstrates the "Brain vs Hands" pattern.
 
 ## Files Explained
 
@@ -167,13 +137,12 @@ The screenshot organization use case is SECONDARY - chosen because it requires m
 | **constitution.md** | Non-negotiable constraints | Before planning |
 | **spec.md** | What to build | For requirements |
 | **plan.md** | How to structure | Before coding |
-| **tasks.md** | Task breakdown | During implementation |
-| **HANDOFF.md** | Step-by-step rebuild | When building |
-| **TRACEABILITY.md** | Requirements → code map | For validation |
 
-## License
+This is free and unencumbered "software" released into the public domain.
 
-MIT License - See LICENSE file
+The software is provided "as is", without warranty of any kind.
+For more information, please refer to <https://unlicense.org/>
+
 
 ## Built With SpecKit
 
