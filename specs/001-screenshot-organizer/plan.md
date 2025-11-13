@@ -376,19 +376,3 @@ logging.basicConfig(
     ]
 )
 ```
-
-### Future Enhancements
-1. Web UI using FastAPI/Gradio
-2. Custom model fine-tuning for better classification
-3. Support for additional file types (PDFs, documents)
-4. Cloud storage integration (S3, Google Drive)
-5. Scheduled batch processing
-6. Custom classification rules via configuration
-
-## Success Metrics
-- **OCR Processing**: <50ms for text-heavy images
-- **Vision Processing**: <2s for visual content
-- **Classification Accuracy**: >90% correct categorization
-- **Batch Performance**: Linear scaling up to 1000 files
-- **User Satisfaction**: Natural conversation flow with Azure AI Foundry models
-- **Cost Savings**: $0.00 per image (all local processing)
