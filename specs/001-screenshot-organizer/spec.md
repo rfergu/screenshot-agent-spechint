@@ -1,6 +1,7 @@
 # Screenshot Agent: Microsoft Agent Framework + MCP Demonstration
 
-> 💡 **Rebuilding this from spec?** See [SPECHINT.md](../../SPECHINT.md) for dependencies, gotchas, and tips from the original build!
+> 💡 **Rebuilding this from spec?**
+> See [SPECHINT.md](../../SPECHINT.md) for dependencies, gotchas, and tips from the original build!
 
 ## Project Purpose
 
