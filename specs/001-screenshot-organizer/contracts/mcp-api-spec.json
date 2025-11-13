@@ -1,0 +1,302 @@
+{
+  "version": "0.1.0",
+  "name": "screenshot-organizer-mcp",
+  "description": "MCP server for intelligent screenshot organization using local AI",
+  "tools": [
+    {
+      "name": "analyze_screenshot",
+      "description": "Analyze a screenshot using OCR or vision model to determine its category and suggest a filename",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Absolute path to the screenshot file"
+          },
+          "force_vision": {
+            "type": "boolean",
+            "description": "Force use of vision model even if OCR would be sufficient",
+            "default": false
+          }
+        },
+        "required": ["path"]
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": ["code", "errors", "documentation", "design", "communication", "memes", "other"],
+            "description": "Categorization of the screenshot content"
+          },
+          "suggested_filename": {
+            "type": "string",
+            "description": "Suggested descriptive filename (without extension)"
+          },
+          "description": {
+            "type": "string",
+            "description": "Brief description of the screenshot content"
+          },
+          "processing_method": {
+            "type": "string",
+            "enum": ["ocr", "vision"],
+            "description": "Method used to process the screenshot"
+          },
+          "processing_time_ms": {
+            "type": "number",
+            "description": "Time taken to process in milliseconds"
+          },
+          "confidence_score": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Confidence score of the categorization"
+          },
+          "extracted_text": {
+            "type": "string",
+            "description": "Text extracted via OCR (if applicable)",
+            "nullable": true
+          }
+        },
+        "required": ["category", "suggested_filename", "processing_method", "processing_time_ms"]
+      }
+    },
+    {
+      "name": "batch_process",
+      "description": "Process all screenshots in a folder, analyzing and categorizing each one",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "folder": {
+            "type": "string",
+            "description": "Path to the folder containing screenshots"
+          },
+          "recursive": {
+            "type": "boolean",
+            "description": "Process subfolders recursively",
+            "default": false
+          },
+          "max_files": {
+            "type": "integer",
+            "description": "Maximum number of files to process",
+            "minimum": 1,
+            "maximum": 1000,
+            "default": null
+          },
+          "organize": {
+            "type": "boolean",
+            "description": "Automatically organize files after analysis",
+            "default": false
+          }
+        },
+        "required": ["folder"]
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "total_files": {
+            "type": "integer",
+            "description": "Total number of files processed"
+          },
+          "successful": {
+            "type": "integer",
+            "description": "Number of successfully processed files"
+          },
+          "failed": {
+            "type": "integer",
+            "description": "Number of files that failed processing"
+          },
+          "ocr_processed": {
+            "type": "integer",
+            "description": "Number of files processed using OCR"
+          },
+          "vision_processed": {
+            "type": "integer",
+            "description": "Number of files processed using vision model"
+          },
+          "total_time_ms": {
+            "type": "number",
+            "description": "Total processing time in milliseconds"
+          },
+          "average_time_per_file_ms": {
+            "type": "number",
+            "description": "Average processing time per file"
+          },
+          "categories_count": {
+            "type": "object",
+            "description": "Count of files per category",
+            "additionalProperties": {
+              "type": "integer"
+            }
+          },
+          "errors": {
+            "type": "array",
+            "description": "List of errors encountered",
+            "items": {
+              "type": "object",
+              "properties": {
+                "file_path": {
+                  "type": "string"
+                },
+                "error_message": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "processed_files": {
+            "type": "array",
+            "description": "Details of each processed file",
+            "items": {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "category": {
+                  "type": "string"
+                },
+                "new_filename": {
+                  "type": "string"
+                },
+                "method": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "required": ["total_files", "successful", "failed", "total_time_ms"]
+      }
+    },
+    {
+      "name": "organize_file",
+      "description": "Move and rename a screenshot file based on its category",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "source_path": {
+            "type": "string",
+            "description": "Current path of the file to organize"
+          },
+          "category": {
+            "type": "string",
+            "enum": ["code", "errors", "documentation", "design", "communication", "memes", "other"],
+            "description": "Category for organization"
+          },
+          "new_filename": {
+            "type": "string",
+            "description": "New filename for the file (without extension)"
+          },
+          "archive_original": {
+            "type": "boolean",
+            "description": "Keep a copy of the original file in archive",
+            "default": false
+          },
+          "base_path": {
+            "type": "string",
+            "description": "Base path for organized files",
+            "default": "~/Screenshots/organized"
+          }
+        },
+        "required": ["source_path", "category", "new_filename"]
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "original_path": {
+            "type": "string",
+            "description": "Original file path"
+          },
+          "new_path": {
+            "type": "string",
+            "description": "New file path after organization"
+          },
+          "archived": {
+            "type": "boolean",
+            "description": "Whether original was archived"
+          },
+          "archive_path": {
+            "type": "string",
+            "description": "Path to archived original",
+            "nullable": true
+          },
+          "success": {
+            "type": "boolean",
+            "description": "Whether organization was successful"
+          },
+          "message": {
+            "type": "string",
+            "description": "Success or error message"
+          }
+        },
+        "required": ["original_path", "new_path", "success", "message"]
+      }
+    }
+  ],
+  "configuration": {
+    "type": "object",
+    "properties": {
+      "ocr_min_words": {
+        "type": "integer",
+        "description": "Minimum words from OCR to skip vision processing",
+        "default": 10
+      },
+      "vision_model_path": {
+        "type": "string",
+        "description": "Path to Azure GPT-4o Vision model",
+        "default": "~/.cache/vision_model"
+      },
+      "organized_base_path": {
+        "type": "string",
+        "description": "Base directory for organized screenshots",
+        "default": "~/Screenshots/organized"
+      },
+      "keep_originals": {
+        "type": "boolean",
+        "description": "Whether to archive original files",
+        "default": true
+      },
+      "log_level": {
+        "type": "string",
+        "enum": ["DEBUG", "INFO", "WARNING", "ERROR"],
+        "description": "Logging verbosity level",
+        "default": "INFO"
+      }
+    }
+  },
+  "errors": [
+    {
+      "code": "FILE_NOT_FOUND",
+      "description": "The specified file or folder does not exist"
+    },
+    {
+      "code": "INVALID_IMAGE",
+      "description": "The file is not a valid image format"
+    },
+    {
+      "code": "OCR_FAILED",
+      "description": "OCR processing failed for the image"
+    },
+    {
+      "code": "VISION_MODEL_ERROR",
+      "description": "Vision model processing failed"
+    },
+    {
+      "code": "MODEL_NOT_LOADED",
+      "description": "Azure GPT-4o Vision model is not available"
+    },
+    {
+      "code": "PERMISSION_DENIED",
+      "description": "No permission to read/write file"
+    },
+    {
+      "code": "ORGANIZATION_FAILED",
+      "description": "Failed to move/rename file"
+    },
+    {
+      "code": "BATCH_SIZE_EXCEEDED",
+      "description": "Batch size exceeds maximum limit"
+    }
+  ]
+}
