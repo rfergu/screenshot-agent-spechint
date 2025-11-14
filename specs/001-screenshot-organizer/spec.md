@@ -38,68 +38,18 @@ This project shows how to build production AI agents using:
    - Constitution documents the reality of small vs large model tradeoffs
    - Shows production AI agent development honestly, including what doesn't work
 
-## Dual-Mode Architecture (Testing vs Production)
+## Dual-Mode Architecture
 
-### Remote Mode - PRIMARY FOCUS (The Actual Demonstration)
+**Remote Mode (Default)** - Production demonstration of Agent Framework + MCP
+- Uses Azure GPT-4o with 7 MCP tools for full screenshot organization
+- Demonstrates reliable tool calling and multi-step workflows
+- Run: `python -m src.cli_interface`
 
-This is the **core demonstration** of Agent Framework WITH MCP Client Integration.
-
-**Purpose:** Show production AI agent development with reliable tool calling
-**Model:** Azure OpenAI GPT-4o (or Azure AI Foundry GPT-4o)
-**Agent Framework:** Microsoft Agent Framework with embedded MCP client
-**Tools:** 7 MCP tools via stdio transport to MCP server subprocess
-**Capabilities:** Complete screenshot organization workflow with conversational UX
-**CLI:** `python -m src.cli_interface` (default - no flags needed)
-
-**What Remote Mode Demonstrates:**
-- ✅ Agent Framework orchestrating GPT-4 for intelligent decisions
-- ✅ Embedded MCP client managing MCP server subprocess
-- ✅ Reliable tool calling with proper error handling
-- ✅ Multi-step workflows (discovery → sampling → execution → summary)
-- ✅ Conversational proactive agent UX (7-phase workflow)
-- ✅ Production-ready architecture patterns
-
-### Local Mode - Testing Only (NOT Part of Demonstration)
-
-This mode exists **ONLY for developer testing** of Agent Framework setup locally.
-
-**Purpose:** Test Agent Framework conversation flow without internet/API costs
-**Model:** Phi-4-mini via Azure AI Foundry CLI (local inference)
-**Agent Framework:** Microsoft Agent Framework (conversation only)
-**Tools:** NONE - local small models don't reliably support tool calling
-**Capabilities:** Basic chat only - NO screenshot processing, NO file operations
-**CLI:** `python -m src.cli_interface --local`
-
-**What Local Mode Is NOT:**
-- ❌ Not for actual screenshot organization
-- ❌ Not a "privacy mode" or offline version
-- ❌ Not a lightweight version of the full application
-- ❌ Not part of the Agent Framework + MCP demonstration
-- ❌ Not for production use
-
-**What Local Mode IS:**
-- ✅ For testing Agent Framework conversation flow locally
-- ✅ For validating system prompts work correctly
-- ✅ For developers making prompt changes without API costs
-- ✅ For verifying Agent Framework client setup works
-- ✅ For learning how Agent Framework handles basic conversations
-
-**When to Use Local Mode:**
-- Testing changes to system prompts before deploying
-- Verifying Agent Framework installation is correct
-- Developing without internet connection
-- Learning Agent Framework conversation patterns
-- Quick validation that agent responds appropriately
-
-**For Everything Else (Including All Demos):** Use remote mode.
-
-**Why No Tools in Local Mode?**
-Through implementation, we discovered that Phi-4-mini and other small local models have unreliable function/tool calling:
-- Tools are ignored or responses are hallucinated
-- JSON function arguments are often malformed
-- Inconsistent behavior makes it unsuitable for demonstrations
-
-Rather than provide a broken experience, local mode focuses on what small models do well: basic conversational chat. This honest approach shows the reality of production AI development - small models for testing conversation flow, large models for reliable tool execution.
+**Local Mode** - Testing only
+- Uses Phi-4-mini for basic chat without tools or file operations
+- For testing Agent Framework setup and prompts locally without API costs
+- Run: `python -m src.cli_interface --local`
+- Note: Small models have unreliable tool calling, so local mode has no MCP tools
 
 ## Feature Description
 

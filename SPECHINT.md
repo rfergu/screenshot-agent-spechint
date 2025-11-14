@@ -1,6 +1,6 @@
 # 💡 Spec Hints - Tips from the Trenches
 
-Hey there! Rebuilding this from the spec? Here are some things I learned the hard way so you don't have to.
+Rebuilding this from the spec? Here are some things I learned the hard way so you don't have to.
 
 ## 🎯 Dependencies That Actually Work
 
