@@ -4,7 +4,7 @@ Get this screenshot agent running in ~15 minutes using AI-assisted development w
 
 ## What is SpecKit?
 
-SpecKit is a specification-driven development workflow. This project includes detailed specs that are comprehensive enough for an AI assistant to rebuild the entire application. You'll use the `/speckit.implement` command in your AI code assistant to trigger the rebuild.
+[SpecKit](https://github.com/github/spec-kit) is GitHub's official toolkit for specification-driven development. This project includes detailed specs that are comprehensive enough for an AI assistant to rebuild the entire application. You'll use the `/speckit.implement` command in your AI code assistant to trigger the rebuild.
 
 ## Prerequisites
 
@@ -25,6 +25,13 @@ Before you start, you'll need:
    - Python 3.11 or higher
    - uv package manager
    - Node.js 18+ (for MCP server)
+   - Git
+
+4. **GitHub SpecKit** - Install the SpecKit CLI:
+   ```bash
+   uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
+   ```
+   Verify installation: `specify check`
 
 ## Step-by-Step Guide
 
@@ -101,7 +108,9 @@ The AI will build a complete screenshot organization agent with:
 ## Troubleshooting
 
 **Command not recognized?**
-- Make sure your AI assistant supports custom slash commands
+- Make sure SpecKit is installed: `uv tool install specify-cli --from git+https://github.com/github/spec-kit.git`
+- Verify installation: `specify check`
+- Make sure your AI assistant supports SpecKit slash commands (Claude Code, GitHub Copilot, Cursor, etc.)
 - Try phrasing it naturally: "Please implement this project following the SpecKit methodology in the specs folder"
 
 **Build fails?**
