@@ -30,7 +30,7 @@ click>=8.1.7
 
 ## ⚡ Performance Tricks I Discovered
 
-**OCR-First Strategy FTW:**
+**OCR-First Strategy:**
 - Try Tesseract OCR first (~50ms) before hitting GPT-4o Vision (~2s)
 - OCR handles most text-heavy screenshots just fine
 - Only fall back to Vision for images/memes/low-text stuff
