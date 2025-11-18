@@ -1,0 +1,13 @@
+# macOS
+.DS_Store
+*.swp
+*.swo
+*~
+
+# IDEs
+.vscode/
+.idea/
+*.iml
+
+# Misc
+.env
